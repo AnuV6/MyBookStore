@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using System.Linq;
 using MyBookStore.Data;
 
@@ -11,6 +12,19 @@ namespace MyBookStore
         {
             InitializeComponent();
             UsernameBox.Focus();
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void PasswordBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                Login_Click(sender, e);
+            }
         }
 
         private void Login_Click(object sender, RoutedEventArgs e)
