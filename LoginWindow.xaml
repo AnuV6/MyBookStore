@@ -23,22 +23,54 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" 
+                        <Border x:Name="Border" 
+                                Background="{TemplateBinding Background}" 
                                 CornerRadius="8"
                                 BorderThickness="0">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="Border" 
+                                                          Storyboard.TargetProperty="Background.Color" 
+                                                          To="#005A9E" 
+                                                          Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="Border" 
+                                                          Storyboard.TargetProperty="Background.Color" 
+                                                          To="#0078D7" 
+                                                          Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="Border" 
+                                                          Storyboard.TargetProperty="Background.Color" 
+                                                          To="#004578" 
+                                                          Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="#CCCCCC"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#005A9E"/>
-                </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="#004578"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
 
         <!-- Modern TextBox Style -->
@@ -101,31 +133,46 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Close Button Style -->
-        <Style x:Key="CloseButton" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#666666"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="Width" Value="30"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="BorderThickness" Value="0"/>
+        <!-- Modern CheckBox Style -->
+        <Style x:Key="ModernCheckBox" TargetType="CheckBox">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" 
-                                CornerRadius="5">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="CheckBorder" 
+                                   Width="18" 
+                                   Height="18" 
+                                   Background="White" 
+                                   BorderBrush="#E0E0E0" 
+                                   BorderThickness="2" 
+                                   CornerRadius="3"
+                                   Margin="0,0,8,0">
+                                <Path x:Name="CheckMark" 
+                                     Data="M 0 0 L 5 5 M 0 5 L 5 0" 
+                                     Stroke="#0078D7" 
+                                     StrokeThickness="2" 
+                                     Stretch="Uniform"
+                                     Visibility="Collapsed"/>
+                            </Border>
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckBorder" Property="Background" Value="#0078D7"/>
+                                <Setter TargetName="CheckBorder" Property="BorderBrush" Value="#0078D7"/>
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="CheckMark" Property="Stroke" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CheckBorder" Property="BorderBrush" Value="#0078D7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FFE5E5"/>
-                    <Setter Property="Foreground" Value="#D32F2F"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
     </Window.Resources>
 
@@ -194,7 +241,16 @@
                 
                 <TextBox x:Name="UsernameBox" 
                         Style="{StaticResource ModernTextBox}"
-                        Margin="0,0,0,20"/>
+                        Margin="0,0,0,5"
+                        ToolTip="Enter your username"/>
+
+                <!-- Username Error Message -->
+                <TextBlock x:Name="UsernameErrorText" 
+                          Text="" 
+                          FontSize="12" 
+                          Foreground="#E74C3C"
+                          Margin="0,0,0,15"
+                          Visibility="Collapsed"/>
 
                 <!-- Password Field -->
                 <TextBlock Text="Password" 
@@ -205,14 +261,44 @@
                 
                 <PasswordBox x:Name="PasswordBox" 
                             Style="{StaticResource ModernPasswordBox}"
-                            Margin="0,0,0,25"
-                            KeyDown="PasswordBox_KeyDown"/>
+                            Margin="0,0,0,5"
+                            KeyDown="PasswordBox_KeyDown"
+                            ToolTip="Enter your password"/>
+
+                <!-- Password Error Message -->
+                <TextBlock x:Name="PasswordErrorText" 
+                          Text="" 
+                          FontSize="12" 
+                          Foreground="#E74C3C"
+                          Margin="0,0,0,15"
+                          Visibility="Collapsed"/>
+
+                <!-- Remember Me Checkbox -->
+                <CheckBox x:Name="RememberMeCheckBox" 
+                         Content="Remember me" 
+                         Style="{StaticResource ModernCheckBox}"
+                         Margin="0,0,0,10"
+                         HorizontalAlignment="Left"
+                         ToolTip="Keep me logged in on this device"/>
+
+                <!-- Forgot Password Link -->
+                <TextBlock HorizontalAlignment="Right" 
+                          Margin="0,0,0,20">
+                    <Hyperlink x:Name="ForgotPasswordLink" 
+                              Click="ForgotPassword_Click">
+                        <Run Text="Forgot Password?" 
+                             FontSize="13" 
+                             Foreground="#0078D7"/>
+                    </Hyperlink>
+                </TextBlock>
 
                 <!-- Login Button -->
-                <Button Content="Sign In" 
+                <Button x:Name="LoginButton" 
+                       Content="Sign In" 
                        Style="{StaticResource ModernButton}"
                        Click="Login_Click"
-                       Margin="0,0,0,15"/>
+                       Margin="0,0,0,15"
+                       ToolTip="Click to sign in to your account"/>
 
                 <!-- Footer Text -->
                 <TextBlock HorizontalAlignment="Center" 
